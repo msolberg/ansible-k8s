@@ -1,0 +1,18 @@
+---
+- hosts: all
+  tasks:
+  - name: Find nginx pods
+    k8s_info:
+      kind: Pod
+      namespace: "{{ project_name }}"
+      label_selectors:
+      - name=nginx
+    register: result
+  
+  - name: Delete nginx pods
+    k8s:
+      state: absent
+      kind: Pod
+      namespace: "{{ project_name }}"
+      name: "{{ item.metadata['name'] }}"
+    with_items: "{{ result.resources }}"
