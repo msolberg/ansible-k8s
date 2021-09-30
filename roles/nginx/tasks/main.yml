@@ -1,0 +1,51 @@
+---
+- name: Create the Nginx Project
+  k8s:
+    name: "{{ project_name }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    state: present
+
+- name: Create the nginx ImageStream
+  k8s:
+    state: present
+    definition:
+      kind: ImageStream
+      apiVersion: image.openshift.io/v1
+      metadata:
+        name: nginx
+        namespace: "{{ project_name }}"
+  
+- name: Create the nginx BuildConfig
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'nginx-bc.yml') }}"
+
+- name: Create the nginx Service
+  k8s:
+    state: present
+    definition:
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: nginx
+        namespace: "{{ project_name }}"
+      spec:
+        ports:
+          - name: web
+            protocol: TCP
+            port: 8080
+            targetPort: 8080
+        selector:
+          name: nginx
+
+- name: Create the nginx Route
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'nginx-route.yml') }}"
+
+- name: Create the nginx DeploymentConfig
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'nginx-dc.yml') }}"
+
