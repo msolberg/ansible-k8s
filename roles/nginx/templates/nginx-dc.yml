@@ -31,7 +31,7 @@ spec:
           name: 'nginx:latest'
         lastTriggeredImage:
     - type: ConfigChange
-  replicas: 1
+  replicas: {{ replica_count }}
   revisionHistoryLimit: 10
   selector:
     name: nginx
