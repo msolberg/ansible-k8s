@@ -1,0 +1,17 @@
+---
+- hosts: all
+  tasks:
+  - name: Find all failed pods
+    k8s_info:
+      kind: Pod
+      field_selectors:
+        - status.phase=Failed
+    register: result
+  
+  - name: Delete failed pods
+    k8s:
+      state: absent
+      kind: Pod
+      namespace: "{{ project_name }}"
+      name: "{{ item.metadata['name'] }}"
+    with_items: "{{ result.resources }}"
