@@ -1,7 +1,7 @@
 ---
 - hosts: all
   tasks:
-  - name: Find all failed pods
+  - name: Find all Evicted pods
     k8s_info:
       kind: Pod
       field_selectors:
@@ -13,4 +13,6 @@
       state: absent
       kind: Pod
       name: "{{ item.metadata['name'] }}"
+      namespace: "{{ item.metadata['namespace'] }}"
     with_items: "{{ result.resources }}"
+
