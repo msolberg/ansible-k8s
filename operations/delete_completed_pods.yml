@@ -5,7 +5,7 @@
     k8s_info:
       kind: Pod
       field_selectors:
-        - status.phase=Completed
+        - status.phase=Succeeded
     register: result
   
   - name: Delete completed pods
