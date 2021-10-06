@@ -1,0 +1,18 @@
+---
+- hosts: all
+  tasks:
+  - name: Find all completed pods
+    k8s_info:
+      kind: Pod
+      field_selectors:
+        - status.phase=Completed
+    register: result
+  
+  - name: Delete completed pods
+    k8s:
+      state: absent
+      kind: Pod
+      name: "{{ item.metadata['name'] }}"
+      namespace: "{{ item.metadata['namespace'] }}"
+    with_items: "{{ result.resources }}"
+
